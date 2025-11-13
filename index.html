@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Attendance App</title>
-
+<title>Attendance App (Google Sheet Integrated)</title>
 <style>
   body {
     font-family: "Poppins", sans-serif;
@@ -111,8 +110,7 @@
 </div>
 
 <script>
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyo48UJMUEqkGLxFZCsYcHOvjLE6lFq6Kgn3Vo0g-a2IYUFCd2N0CFGmWR4JERQ8Wg/exec"; // Replace with your Apps Script URL
-
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyo48UJMUEqkGLxFZCsYcHOvjLE6lFq6Kgn3Vo0g-a2IYUFCd2N0CFGmWR4JERQ8Wg/exec"; // 🔹 Replace with Apps Script Web App URL
 const employeeSelect = document.getElementById("employeeSelect");
 const addEmployeeBtn = document.getElementById("addEmployee");
 const deleteEmployeeBtn = document.getElementById("deleteEmployee");
@@ -123,6 +121,7 @@ const historyTable = document.getElementById("historyTable").querySelector("tbod
 
 let employees = JSON.parse(localStorage.getItem("employees")) || [];
 
+// Load Employees
 function loadEmployees() {
   employeeSelect.innerHTML = '<option value="">Select Employee</option>';
   employees.forEach(name => {
@@ -131,85 +130,72 @@ function loadEmployees() {
     employeeSelect.appendChild(opt);
   });
 }
+function saveEmployees() { localStorage.setItem("employees", JSON.stringify(employees)); }
 
-function saveEmployees() {
-  localStorage.setItem("employees", JSON.stringify(employees));
-}
-
-// Employee Management
+// Add Employee
 addEmployeeBtn.onclick = () => {
   const name = employeeInput.value.trim();
   if (!name) return alert("Please enter a name!");
   if (employees.includes(name)) return alert("Employee already exists!");
   employees.push(name);
-  saveEmployees();
-  employeeInput.value = "";
-  loadEmployees();
+  saveEmployees(); employeeInput.value = ""; loadEmployees();
 };
 
+// Delete Employee
 deleteEmployeeBtn.onclick = () => {
   const name = employeeSelect.value;
   if (!name) return alert("Select an employee to delete!");
   employees = employees.filter(e => e !== name);
-  saveEmployees();
-  loadEmployees();
+  saveEmployees(); loadEmployees();
 };
 
-// Attendance
-let attendanceHistory = [];
-
-function saveToSheet(record) {
-  fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify(record)
-  })
-  .then(res => res.json())
-  .then(data => console.log("Saved to Sheet:", data))
-  .catch(err => console.error("Error saving to sheet:", err));
-}
-
-clockInBtn.onclick = () => {
+// Clock In
+clockInBtn.onclick = async () => {
   const name = employeeSelect.value;
   if (!name) return alert("Select employee first!");
-  const date = new Date().toLocaleDateString();
-  const time = new Date().toLocaleTimeString();
-  const record = { name, date, in: time, out: "", hours: "" };
-  attendanceHistory.push(record);
-  renderTable();
-  saveToSheet(record);
+  const data = {
+    action: "clockin",
+    name,
+    date: new Date().toLocaleDateString(),
+    in: new Date().toLocaleTimeString(),
+  };
+  await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(data) });
+  alert("Clock-In saved to Google Sheet!");
+  loadHistory();
 };
 
-clockOutBtn.onclick = () => {
+// Clock Out
+clockOutBtn.onclick = async () => {
   const name = employeeSelect.value;
   if (!name) return alert("Select employee first!");
-  const record = attendanceHistory.find(r => r.name === name && !r.out);
-  if (!record) return alert("No clock-in record found!");
-
-  record.out = new Date().toLocaleTimeString();
-  const inTime = new Date(`${record.date} ${record.in}`);
-  const outTime = new Date(`${record.date} ${record.out}`);
-  const diff = Math.max(0, outTime - inTime);
-  const hrs = Math.floor(diff / (1000 * 60 * 60));
-  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  record.hours = `${hrs}h ${mins}m`;
-
-  renderTable();
-  saveToSheet(record);
+  const data = {
+    action: "clockout",
+    name,
+    out: new Date().toLocaleTimeString(),
+  };
+  await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(data) });
+  alert("Clock-Out updated in Google Sheet!");
+  loadHistory();
 };
 
-function renderTable() {
+// Fetch History from Google Sheet
+async function loadHistory() {
+  historyTable.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+  const res = await fetch(SCRIPT_URL + "?action=getdata");
+  const rows = await res.json();
   historyTable.innerHTML = "";
-  attendanceHistory.forEach(r => {
+  rows.forEach(r => {
     const row = historyTable.insertRow();
-    row.insertCell().textContent = r.name;
-    row.insertCell().textContent = r.date;
-    row.insertCell().textContent = r.in;
-    row.insertCell().textContent = r.out || "-";
-    row.insertCell().textContent = r.hours || "-";
+    row.insertCell().textContent = r[0];
+    row.insertCell().textContent = r[1];
+    row.insertCell().textContent = r[2];
+    row.insertCell().textContent = r[3];
+    row.insertCell().textContent = r[4];
   });
 }
 
 loadEmployees();
+loadHistory();
 </script>
 </body>
 </html>
