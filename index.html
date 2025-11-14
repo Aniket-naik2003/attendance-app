@@ -111,7 +111,7 @@
 </div>
 
 <script>
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyo48UJMUEqkGLxFZCsYcHOvjLE6lFq6Kgn3Vo0g-a2IYUFCd2N0CFGmWR4JERQ8Wg/exec"; // Replace with your Apps Script URL
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyo48UJMUEqkGLxFZCsYcHOvjLE6lFq6Kgn3Vo0g-a2IYUFCd2N0CFGmWR4JERQ8Wg/exec"; // Replace with your Apps Script Web App URL
 
 const employeeSelect = document.getElementById("employeeSelect");
 const addEmployeeBtn = document.getElementById("addEmployee");
@@ -121,7 +121,7 @@ const clockInBtn = document.getElementById("clockIn");
 const clockOutBtn = document.getElementById("clockOut");
 const historyTable = document.getElementById("historyTable").querySelector("tbody");
 
-let employees = JSON.parse(localStorage.getItem("employees")) || [];
+let employees = [];
 
 function loadEmployees() {
   employeeSelect.innerHTML = '<option value="">Select Employee</option>';
@@ -131,32 +131,6 @@ function loadEmployees() {
     employeeSelect.appendChild(opt);
   });
 }
-
-function saveEmployees() {
-  localStorage.setItem("employees", JSON.stringify(employees));
-}
-
-// Employee Management
-addEmployeeBtn.onclick = () => {
-  const name = employeeInput.value.trim();
-  if (!name) return alert("Please enter a name!");
-  if (employees.includes(name)) return alert("Employee already exists!");
-  employees.push(name);
-  saveEmployees();
-  employeeInput.value = "";
-  loadEmployees();
-};
-
-deleteEmployeeBtn.onclick = () => {
-  const name = employeeSelect.value;
-  if (!name) return alert("Select an employee to delete!");
-  employees = employees.filter(e => e !== name);
-  saveEmployees();
-  loadEmployees();
-};
-
-// Attendance
-let attendanceHistory = [];
 
 function saveToSheet(record) {
   fetch(GOOGLE_SCRIPT_URL, {
@@ -168,12 +142,33 @@ function saveToSheet(record) {
   .catch(err => console.error("Error saving to sheet:", err));
 }
 
+// Employee Management
+addEmployeeBtn.onclick = () => {
+  const name = employeeInput.value.trim();
+  if (!name) return alert("Please enter a name!");
+  if (employees.includes(name)) return alert("Employee already exists!");
+  employees.push(name);
+  employeeInput.value = "";
+  loadEmployees();
+};
+
+deleteEmployeeBtn.onclick = () => {
+  const name = employeeSelect.value;
+  if (!name) return alert("Select an employee to delete!");
+  employees = employees.filter(e => e !== name);
+  loadEmployees();
+};
+
+// Attendance
+let attendanceHistory = []; // Local storage removed
+
 clockInBtn.onclick = () => {
   const name = employeeSelect.value;
   if (!name) return alert("Select employee first!");
   const date = new Date().toLocaleDateString();
   const time = new Date().toLocaleTimeString();
   const record = { name, date, in: time, out: "", hours: "" };
+
   attendanceHistory.push(record);
   renderTable();
   saveToSheet(record);
@@ -197,6 +192,7 @@ clockOutBtn.onclick = () => {
   saveToSheet(record);
 };
 
+// Render Table
 function renderTable() {
   historyTable.innerHTML = "";
   attendanceHistory.forEach(r => {
