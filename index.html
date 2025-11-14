@@ -1,310 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Smart Attendance — Advanced</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Attendance App</title>
+
 <style>
-  :root{
-    --blue:#0b74ff;
-    --bg: linear-gradient(135deg,#0078d4,#00b4db);
-    --card:#ffffff;
-    --muted:#6b7280;
+  body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #0078d4, #00b4db);
+    margin: 0;
+    padding: 25px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
   }
-  *{box-sizing:border-box}
-  body{
-    margin:0; font-family:"Poppins",sans-serif; background:var(--bg);
-    min-height:100vh; display:flex; align-items:center; justify-content:center; padding:28px;
+  .container {
+    width: 100%;
+    max-width: 850px;
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
-  .app{
-    width:100%; max-width:920px; background:var(--card); border-radius:18px; padding:28px;
-    box-shadow:0 20px 50px rgba(2,6,23,0.18);
+  h2 {
+    text-align: center;
+    color: #0078d4;
+    margin-bottom: 25px;
+    font-weight: 700;
+    font-size: 28px;
   }
-
-  .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-  .title{font-size:22px;color:var(--blue);font-weight:700}
-  .controls{display:flex;gap:8px;align-items:center}
-
-  .card{background:#fbfdff;border-radius:12px;padding:16px;margin-bottom:18px;box-shadow:0 6px 20px rgba(2,6,23,0.06)}
-  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-  label{font-size:14px;color:var(--muted);min-width:120px}
-
-  input[type="text"], select{
-    padding:10px 12px;border-radius:10px;border:1px solid #e6eefb;
-    font-size:15px;min-width:220px;background:#fff;
+  h3 {
+    color: #333;
+    margin-bottom: 12px;
+    font-weight: 600;
   }
-
-  .btn{
-    padding:12px 16px;border-radius:10px;border:none;color:white;font-weight:700;cursor:pointer;font-size:15px;
+  .section {
+    margin-bottom: 30px;
   }
-  .btn-primary{background:var(--blue)}
-  .btn-success{background:#16a34a}
-  .btn-danger{background:#ef4444}
-  .btn-ghost{background:transparent;border:1px solid #e6eefb;color:#334155}
-
-  .status {margin-left:8px;font-size:14px;color:#334155;font-weight:600}
-
-  /* history table */
-  table{width:100%;border-collapse:collapse;margin-top:8px}
-  th,td{padding:10px 12px;border-bottom:1px solid #f1f5f9;text-align:left;font-size:14px}
-  th{background:#f8fbff;color:#0f172a;font-weight:700}
-  .small{font-size:13px;color:var(--muted)}
-
-  /* responsive */
-  @media (max-width:640px){
-    .row{flex-direction:column;align-items:stretch}
-    label{min-width:unset}
-    input,select{width:100%}
+  .input-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  input,
+  select,
+  button {
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+  }
+  button {
+    background: #0078d4;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #005fa3;
+  }
+  .delete {
+    background: #ff9800 !important;
+  }
+  .delete:hover {
+    background: #e68600 !important;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  th {
+    background: #0078d4;
+    color: white;
   }
 </style>
 </head>
+
 <body>
-  <div class="app" role="main">
-    <div class="header">
-      <div class="title">Smart Attendance — Advanced</div>
-      <div class="controls small">India (Asia/Kolkata) • Auto-check IN/OUT</div>
+<div class="container">
+  <h2>Attendance App</h2>
+
+  <!-- Employee Section -->
+  <div class="section">
+    <h3>Employee Management</h3>
+    <div class="input-group">
+      <input type="text" id="employeeName" placeholder="Enter new employee name" />
+      <button id="addEmployee">Add Employee</button>
     </div>
 
-    <!-- Employee management -->
-    <div class="card">
-      <div style="font-weight:700;margin-bottom:8px">Employee</div>
-      <div class="row">
-        <input id="empInput" type="text" placeholder="Type name to add or leave to select from list">
-        <button class="btn btn-primary" id="addBtn">Add</button>
-        <button class="btn btn-ghost" id="clearNameBtn" title="Clear saved name">Clear saved</button>
-      </div>
-      <div style="margin-top:12px" class="row">
-        <label>Select employee:</label>
-        <select id="empSelect"></select>
-        <button class="btn btn-danger" id="deleteBtn">Delete</button>
-        <span id="savedNameTag" class="status small"></span>
-      </div>
-    </div>
-
-    <!-- Attendance actions -->
-    <div class="card">
-      <div style="font-weight:700;margin-bottom:8px">Actions</div>
-
-      <div class="row" style="align-items:center">
-        <label>Today's status:</label>
-        <div id="todayStatus" class="status small">Checking...</div>
-      </div>
-
-      <div class="row" style="margin-top:12px">
-        <button class="btn btn-success" id="btnIn">IN</button>
-        <button class="btn btn-danger" id="btnOut">OUT</button>
-        <button class="btn btn-ghost" id="refreshBtn">Refresh</button>
-      </div>
-      <div style="margin-top:10px" class="small">Note: IN will be disabled if already marked for today. OUT will be disabled if no active IN found today.</div>
-    </div>
-
-    <!-- History -->
-    <div class="card">
-      <div style="font-weight:700;margin-bottom:8px">History (latest 100 rows)</div>
-      <table aria-label="history" id="historyTable">
-        <thead>
-          <tr><th>Name</th><th>Date</th><th>In Time</th><th>Out Time</th><th>Hours</th></tr>
-        </thead>
-        <tbody id="historyBody"></tbody>
-      </table>
+    <div class="input-group">
+      <select id="employeeSelect">
+        <option value="">Select Employee</option>
+      </select>
+      <button class="delete" id="deleteEmployee">Delete Employee</button>
     </div>
   </div>
 
+  <!-- Attendance Section -->
+  <div class="section">
+    <h3>Attendance</h3>
+    <div class="input-group">
+      <button id="clockIn">Clock In</button>
+      <button id="clockOut">Clock Out</button>
+    </div>
+  </div>
+
+  <!-- History Section -->
+  <div class="section">
+    <h3>History</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Employee Name</th>
+          <th>Date</th>
+          <th>In Time</th>
+          <th>Out Time</th>
+          <th>Hours Worked</th>
+        </tr>
+      </thead>
+      <tbody id="historyTable"></tbody>
+    </table>
+  </div>
+</div>
+
 <script>
-/* ========== CONFIG ========== */
-// Replace with your deployed Apps Script Web App URL (from Deploy -> New deployment -> Web app)
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzegLBiifAby7njx9w6Ja3H3M9zlm_ofriOZBMdPX9Mu4I_-v1QZzAoqliIP9nxelAA/exec";
+/* ===============================
+        CONFIG   
+================================== */
+const API = "https://script.google.com/macros/s/AKfycbzegLBiifAby7njx9w6Ja3H3M9zlm_ofriOZBMdPX9Mu4I_-v1QZzAoqliIP9nxelAA/exec";   // <-- Replace this only
 
-/* ========== STATE ========== */
-let employees = JSON.parse(localStorage.getItem("employees_v1") || "[]");
+/* ===============================
+       LOCAL STORAGE (Employees)
+================================== */
+let employees = JSON.parse(localStorage.getItem("employees")) || [];
 
-/* ========== DOM ========= */
-const empInput = document.getElementById("empInput");
-const addBtn = document.getElementById("addBtn");
-const clearNameBtn = document.getElementById("clearNameBtn");
-const empSelect = document.getElementById("empSelect");
-const deleteBtn = document.getElementById("deleteBtn");
-const btnIn = document.getElementById("btnIn");
-const btnOut = document.getElementById("btnOut");
-const refreshBtn = document.getElementById("refreshBtn");
-const savedNameTag = document.getElementById("savedNameTag");
-const todayStatus = document.getElementById("todayStatus");
-const historyBody = document.getElementById("historyBody");
+const employeeSelect = document.getElementById("employeeSelect");
+const employeeInput = document.getElementById("employeeName");
+const addEmployeeBtn = document.getElementById("addEmployee");
+const deleteEmployeeBtn = document.getElementById("deleteEmployee");
+const clockInBtn = document.getElementById("clockIn");
+const clockOutBtn = document.getElementById("clockOut");
+const historyTable = document.getElementById("historyTable");
 
-/* ========== HELPERS ========== */
-function saveEmployees(){
-  localStorage.setItem("employees_v1", JSON.stringify(employees));
-}
-function loadEmployeesToSelect(){
-  empSelect.innerHTML = "<option value=''>-- Select --</option>";
-  employees.forEach(n => {
-    const o = document.createElement("option");
-    o.value = n; o.textContent = n;
-    empSelect.appendChild(o);
+/* Load employees in dropdown */
+function loadEmployees() {
+  employeeSelect.innerHTML = '<option value="">Select Employee</option>';
+  employees.forEach((name) => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    employeeSelect.appendChild(option);
   });
-  const saved = localStorage.getItem("emp_saved_name");
-  savedNameTag.textContent = saved ? "Saved name: " + saved : "";
-  if (saved) {
-    // auto-select saved name if present in list
-    if (employees.includes(saved)) empSelect.value = saved;
-  }
 }
 
-/* ========== API HELPERS ========== */
-async function apiGet(action = "getall", name = "") {
-  const url = new URL(WEB_APP_URL);
-  url.searchParams.set("action", action);
-  if (name) url.searchParams.set("name", name);
-  const res = await fetch(url.toString(), { method: "GET" });
-  return res.json();
+/* Save employees in localStorage */
+function saveEmployees() {
+  localStorage.setItem("employees", JSON.stringify(employees));
 }
 
-async function apiPost(payload) {
-  const res = await fetch(WEB_APP_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
-  return res.json();
-}
+/* Add Employee */
+addEmployeeBtn.onclick = () => {
+  const name = employeeInput.value.trim();
+  if (!name) return alert("Enter name!");
+  if (employees.includes(name)) return alert("Employee already exists");
 
-/* ========== UI BEHAVIOUR ========== */
-addBtn.onclick = () => {
-  const name = empInput.value.trim();
-  if (!name) return alert("Enter employee name to add");
-  if (!employees.includes(name)) employees.push(name);
+  employees.push(name);
   saveEmployees();
-  empInput.value = "";
-  loadEmployeesToSelect();
+  loadEmployees();
+  employeeInput.value = "";
 };
 
-deleteBtn.onclick = () => {
-  const name = empSelect.value;
+/* Delete Employee */
+deleteEmployeeBtn.onclick = () => {
+  const name = employeeSelect.value;
   if (!name) return alert("Select employee to delete");
-  if (!confirm("Delete " + name + " ?")) return;
-  employees = employees.filter(x => x !== name);
+
+  employees = employees.filter((e) => e !== name);
   saveEmployees();
-  loadEmployeesToSelect();
+  loadEmployees();
 };
 
-clearNameBtn.onclick = () => {
-  localStorage.removeItem("emp_saved_name");
-  savedNameTag.textContent = "";
-  alert("Saved name cleared");
-};
+/* ===============================
+         SEND CLOCK IN/OUT
+================================== */
+function send(action) {
+  const name = employeeSelect.value;
+  if (!name) return alert("Select employee!");
 
-empSelect.onchange = () => {
-  const s = empSelect.value;
-  if (s) {
-    localStorage.setItem("emp_saved_name", s);
-    savedNameTag.textContent = "Saved name: " + s;
-  }
-  checkTodayStatus();
-};
-
-/* ========== Core: check today's status for selected employee ========= */
-async function checkTodayStatus(){
-  const name = empSelect.value || localStorage.getItem("emp_saved_name") || "";
-  if (!name) {
-    todayStatus.textContent = "No employee selected";
-    btnIn.disabled = true;
-    btnOut.disabled = true;
-    return;
-  }
-  todayStatus.textContent = "Checking...";
-  try {
-    // call backend to check today's last IN/OUT
-    const r = await apiGet("check", name);
-    // r = { status: "no_in" | "in_open" | "in_closed", lastRowIndex: number (optional), lastIn: [...] }
-    if (r.status === "no_in") {
-      todayStatus.textContent = name + " — Not checked in today";
-      btnIn.disabled = false;
-      btnOut.disabled = true;
-    } else if (r.status === "in_open") {
-      todayStatus.textContent = name + " — Already IN at " + r.lastInTime;
-      btnIn.disabled = true;
-      btnOut.disabled = false;
-    } else if (r.status === "in_closed") {
-      todayStatus.textContent = name + " — Already IN & OUT today";
-      btnIn.disabled = false; // allow new in if needed
-      btnOut.disabled = true;
-    } else {
-      todayStatus.textContent = "Unknown status";
-      btnIn.disabled = false; btnOut.disabled = true;
-    }
-  } catch (err) {
-    console.error(err);
-    todayStatus.textContent = "Error checking status";
-  }
-}
-
-/* ========== Actions ========= */
-btnIn.onclick = async () => {
-  const name = empSelect.value || localStorage.getItem("emp_saved_name") || "";
-  if (!name) return alert("Select employee");
-  btnIn.disabled = true;
-  try {
-    const res = await apiPost({ action: "clockin", name });
-    if (res.status === "in_saved") {
-      alert("IN saved");
-    } else {
-      alert("Unexpected: " + JSON.stringify(res));
-    }
-  } catch (e) { alert("Error: " + e.message) }
-  await refreshAll();
-};
-
-btnOut.onclick = async () => {
-  const name = empSelect.value || localStorage.getItem("emp_saved_name") || "";
-  if (!name) return alert("Select employee");
-  btnOut.disabled = true;
-  try {
-    const res = await apiPost({ action: "clockout", name });
-    if (res.status === "out_saved") {
-      alert("OUT updated");
-    } else if (res.status === "no_in_found") {
-      alert("No IN record found for today");
-    } else {
-      alert("Unexpected: " + JSON.stringify(res));
-    }
-  } catch (e) { alert("Error: " + e.message) }
-  await refreshAll();
-};
-
-/* ========== History + refresh ========= */
-async function loadHistory(){
-  historyBody.innerHTML = "<tr><td colspan='5' class='small'>Loading...</td></tr>";
-  try {
-    const rows = await apiGet("getall");
-    historyBody.innerHTML = "";
-    // rows expected: array of arrays [name, date, inTime, outTime, hours]
-    rows.slice(0,100).reverse().forEach(r => {
-      const tr = document.createElement("tr");
-      r.forEach((c, idx) => {
-        const td = document.createElement("td");
-        td.textContent = c || (idx===4 ? "-" : "-");
-        tr.appendChild(td);
-      });
-      historyBody.appendChild(tr);
+  fetch(API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"   // FIXED
+    },
+    body: JSON.stringify({ action, name })
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      loadHistory();
+    })
+    .catch((err) => {
+      alert("Failed to reach server: " + err);
     });
-  } catch (e) {
-    historyBody.innerHTML = "<tr><td colspan='5'>Error loading history</td></tr>";
-  }
 }
 
-async function refreshAll(){
-  loadEmployeesToSelect();
-  await loadHistory();
-  await checkTodayStatus();
+clockInBtn.onclick = () => send("clockin");
+clockOutBtn.onclick = () => send("clockout");
+
+/* ===============================
+           LOAD HISTORY
+================================== */
+function loadHistory() {
+  fetch(API + "?action=getall")
+    .then((res) => res.json())
+    .then((rows) => {
+      historyTable.innerHTML = "";
+      rows.forEach((r) => {
+        const tr = document.createElement("tr");
+        r.forEach((col) => {
+          const td = document.createElement("td");
+          td.textContent = col || "-";
+          tr.appendChild(td);
+        });
+        historyTable.appendChild(tr);
+      });
+    });
 }
 
-/* ========== init ========= */
-loadEmployeesToSelect();
-refreshAll();
-
-/* refresh button */
-refreshBtn.onclick = refreshAll;
+/* Initialize */
+loadEmployees();
+loadHistory();
 </script>
 </body>
 </html>
