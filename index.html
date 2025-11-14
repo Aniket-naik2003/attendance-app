@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Attendance App</title>
-
 <style>
   body {
     font-family: "Poppins", sans-serif;
@@ -16,102 +15,115 @@
     align-items: flex-start;
     min-height: 100vh;
   }
-
   .container {
     width: 100%;
     max-width: 850px;
     background: #ffffff;
     border-radius: 18px;
     padding: 25px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    animation: fadeIn 0.7s ease-in-out;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
   }
-
-  h2 { text-align: center; color: #0078d4; margin-bottom: 25px; font-weight: 700; }
-  h3 { color: #333; margin-bottom: 12px; }
-  .section { margin-bottom: 25px; }
-  .input-group { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
-  input, select, button {
+  h2 {
+    text-align: center;
+    color: #0078d4;
+    margin-bottom: 25px;
+    font-weight: 700;
+  }
+  h3 {
+    color: #333;
+    margin-bottom: 12px;
+  }
+  .section {
+    margin-bottom: 25px;
+  }
+  .input-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  input,
+  select,
+  button {
     padding: 10px 12px;
     border-radius: 10px;
     border: 1px solid #ccc;
     font-size: 15px;
-    transition: all 0.3s ease;
   }
-  input:focus, select:focus { outline: none; border-color: #0078d4; box-shadow: 0 0 5px rgba(0,120,212,0.4); }
   button {
-    border: none; color: #fff; cursor: pointer; font-weight: 600; position: relative; overflow: hidden;
+    background: #0078d4;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
   }
-  button::after { content: ""; position: absolute; width: 0; height: 100%; left: 0; top: 0; background: rgba(255,255,255,0.2); transition: 0.4s; }
-  button:hover::after { width: 100%; }
-  button:hover { transform: scale(1.03); }
-
-  #addEmployee, #clockIn, #clockOut { background: linear-gradient(135deg, #0078d4, #00b4db); }
-  .delete { background: linear-gradient(135deg, #ff9800, #ffb84d); }
-
-  table { width: 100%; border-collapse: collapse; border-radius: 10px; overflow: hidden; margin-top: 15px; }
-  th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
-  th { background: #0078d4; color: white; }
-  tr:nth-child(even) { background: #f9f9f9; }
-
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  @media (max-width: 600px) {
-    .container { padding: 15px; }
-    .input-group { flex-direction: column; }
-    button, input, select { width: 100%; }
-    table { font-size: 13px; }
+  .delete {
+    background: #ff9800;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  th,
+  td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+  }
+  th {
+    background: #0078d4;
+    color: white;
   }
 </style>
 </head>
-
 <body>
-<div class="container">
-  <h2>Attendance App</h2>
+  <div class="container">
+    <h2>Attendance App</h2>
 
-  <!-- Employee Section -->
-  <div class="section">
-    <h3>Employee Management</h3>
-    <div class="input-group">
-      <input type="text" id="employeeName" placeholder="Enter new employee name">
-      <button id="addEmployee">Add Employee</button>
+    <div class="section">
+      <h3>Employee Management</h3>
+      <div class="input-group">
+        <input type="text" id="employeeName" placeholder="Enter new employee name" />
+        <button id="addEmployee">Add Employee</button>
+      </div>
+      <div class="input-group">
+        <select id="employeeSelect">
+          <option value="">Select Employee</option>
+        </select>
+        <button class="delete" id="deleteEmployee">Delete Employee</button>
+      </div>
     </div>
-    <div class="input-group">
-      <select id="employeeSelect">
-        <option value="">Select Employee</option>
-      </select>
-      <button class="delete" id="deleteEmployee">Delete Employee</button>
+
+    <div class="section">
+      <h3>Attendance</h3>
+      <div class="input-group">
+        <button id="clockIn">Clock In</button>
+        <button id="clockOut">Clock Out</button>
+      </div>
+    </div>
+
+    <div class="section">
+      <h3>History</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee Name</th>
+            <th>Date</th>
+            <th>In Time</th>
+            <th>Out Time</th>
+            <th>Hours Worked</th>
+          </tr>
+        </thead>
+        <tbody id="historyTable"></tbody>
+      </table>
     </div>
   </div>
-
-  <!-- Attendance Section -->
-  <div class="section">
-    <h3>Attendance</h3>
-    <div class="input-group">
-      <button id="clockIn">Clock In</button>
-      <button id="clockOut">Clock Out</button>
-    </div>
-  </div>
-
-  <!-- History Section -->
-  <div class="section">
-    <h3>History</h3>
-    <table id="historyTable">
-      <thead>
-        <tr>
-          <th>Employee Name</th>
-          <th>Date</th>
-          <th>In Time</th>
-          <th>Out Time</th>
-          <th>Hours Worked</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
 
 <script>
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyo48UJMUEqkGLxFZCsYcHOvjLE6lFq6Kgn3Vo0g-a2IYUFCd2N0CFGmWR4JERQ8Wg/exec"; // Replace with your Apps Script Web App URL
+const API = "https://script.google.com/macros/s/AKfycbyo48UJMUEqkGLxFZCsYcHOvjLE6lFq6Kgn3Vo0g-a2IYUFCd2N0CFGmWR4JERQ8Wg/exec";
+
+let employees = JSON.parse(localStorage.getItem("employees")) || [];
 
 const employeeSelect = document.getElementById("employeeSelect");
 const addEmployeeBtn = document.getElementById("addEmployee");
@@ -119,93 +131,72 @@ const deleteEmployeeBtn = document.getElementById("deleteEmployee");
 const employeeInput = document.getElementById("employeeName");
 const clockInBtn = document.getElementById("clockIn");
 const clockOutBtn = document.getElementById("clockOut");
-const historyTable = document.getElementById("historyTable").querySelector("tbody");
-
-let employees = [];
+const historyTable = document.getElementById("historyTable");
 
 function loadEmployees() {
   employeeSelect.innerHTML = '<option value="">Select Employee</option>';
-  employees.forEach(name => {
-    const opt = document.createElement("option");
-    opt.value = opt.textContent = name;
-    employeeSelect.appendChild(opt);
+  employees.forEach((name) => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    employeeSelect.appendChild(option);
   });
 }
-
-function saveToSheet(record) {
-  fetch(GOOGLE_SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify(record)
-  })
-  .then(res => res.json())
-  .then(data => console.log("Saved to Sheet:", data))
-  .catch(err => console.error("Error saving to sheet:", err));
+function saveEmployees() {
+  localStorage.setItem("employees", JSON.stringify(employees));
 }
-
-// Employee Management
 addEmployeeBtn.onclick = () => {
   const name = employeeInput.value.trim();
-  if (!name) return alert("Please enter a name!");
-  if (employees.includes(name)) return alert("Employee already exists!");
+  if (!name) return alert("Enter name!");
+  if (employees.includes(name)) return alert("Already exists!");
   employees.push(name);
+  saveEmployees();
   employeeInput.value = "";
   loadEmployees();
 };
-
 deleteEmployeeBtn.onclick = () => {
   const name = employeeSelect.value;
-  if (!name) return alert("Select an employee to delete!");
-  employees = employees.filter(e => e !== name);
+  if (!name) return alert("Select employee!");
+  employees = employees.filter((e) => e !== name);
+  saveEmployees();
   loadEmployees();
 };
 
-// Attendance
-let attendanceHistory = []; // Local storage removed
-
-clockInBtn.onclick = () => {
+function send(action) {
   const name = employeeSelect.value;
   if (!name) return alert("Select employee first!");
-  const date = new Date().toLocaleDateString();
-  const time = new Date().toLocaleTimeString();
-  const record = { name, date, in: time, out: "", hours: "" };
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({ action, name }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      loadHistory();
+    });
+}
 
-  attendanceHistory.push(record);
-  renderTable();
-  saveToSheet(record);
-};
+clockInBtn.onclick = () => send("clockin");
+clockOutBtn.onclick = () => send("clockout");
 
-clockOutBtn.onclick = () => {
-  const name = employeeSelect.value;
-  if (!name) return alert("Select employee first!");
-  const record = attendanceHistory.find(r => r.name === name && !r.out);
-  if (!record) return alert("No clock-in record found!");
-
-  record.out = new Date().toLocaleTimeString();
-  const inTime = new Date(`${record.date} ${record.in}`);
-  const outTime = new Date(`${record.date} ${record.out}`);
-  const diff = Math.max(0, outTime - inTime);
-  const hrs = Math.floor(diff / (1000 * 60 * 60));
-  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  record.hours = `${hrs}h ${mins}m`;
-
-  renderTable();
-  saveToSheet(record);
-};
-
-// Render Table
-function renderTable() {
-  historyTable.innerHTML = "";
-  attendanceHistory.forEach(r => {
-    const row = historyTable.insertRow();
-    row.insertCell().textContent = r.name;
-    row.insertCell().textContent = r.date;
-    row.insertCell().textContent = r.in;
-    row.insertCell().textContent = r.out || "-";
-    row.insertCell().textContent = r.hours || "-";
-  });
+function loadHistory() {
+  fetch(API + "?read=1")
+    .then((res) => res.json())
+    .then((rows) => {
+      historyTable.innerHTML = "";
+      rows.forEach((r) => {
+        const tr = document.createElement("tr");
+        r.forEach((col) => {
+          const td = document.createElement("td");
+          td.textContent = col || "-";
+          tr.appendChild(td);
+        });
+        historyTable.appendChild(tr);
+      });
+    });
 }
 
 loadEmployees();
+loadHistory();
 </script>
 </body>
 </html>
